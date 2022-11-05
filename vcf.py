@@ -32,7 +32,10 @@ for line in lines:
     if len(line.split()) == 3:
       line = line.split()
       line = str(f"{line[2]} {line[0]} {line[1]}")
-
+      card[vcard_id - 1].append(line)
+    elif len(line.split()) == 2:
+      line = line.split()
+      line = str(f"{line[1]} {line[0]}")
       card[vcard_id - 1].append(line)
     else:
       card[vcard_id - 1].append(line)
