@@ -41,10 +41,7 @@ for line in lines:
     line = re.sub(r"\(|\)|-", "", line)
     line = re.sub(r" ", "", line)
     line = re.sub(r"\+7", "8", line)
-    if len(line) == 6:
-      card[vcard_id - 1].append(line)
-    else:
-      card[vcard_id - 1].append(line)
+    card[vcard_id - 1].append(line)
 vcf.close
 
 card.sort()
