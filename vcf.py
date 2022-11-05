@@ -8,10 +8,10 @@ import configparser
 # Read local file `config.ini`.
 config = configparser.ConfigParser()
 config.read('config.ini')
-
-
 url = config['SETTINGS']['URL']
 user, password = config['SETTINGS']['USER'], config['SETTINGS']['PASSWORD'] 
+yealink_xml = config['SETTINGS']['YEALINK_XML']
+
 resp = requests.get(url, auth=(user, password))
 open("vc.vcf", "wb").write(resp.content)
 
@@ -49,15 +49,19 @@ vcf.close
 
 card.sort()
 
-print("<YeastarIPPhoneDirectory>")
+
+f = open(yealink_xml, 'w')
+
+f.write("<YeastarIPPhoneDirectory>\n")
 
 for en in card:
   if len(en) > 1:
-    print("   <DirectoryEntry>")
-    print(f'      <Name>{en.pop(0)}</Name>')
+    f.write("   <DirectoryEntry>\n")
+    f.write(f'      <Name>{en.pop(0)}</Name>\n')
     for i in en:
-      print(f'        <Telephone>{i}</Telephone>')
-    print("   </DirectoryEntry>")
+      f.write(f'        <Telephone>{i}</Telephone>\n')
+    f.write("   </DirectoryEntry>\n")
 
-print("</YeastarIPPhoneDirectory>")
+f.write("</YeastarIPPhoneDirectory>\n")
 
+f.close()
