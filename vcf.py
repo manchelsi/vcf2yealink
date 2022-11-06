@@ -15,15 +15,13 @@ def check_md5():
   content = a_file.read()
   md5_hash.update(content)
   vcf_hash = md5_hash.hexdigest()
-
-  fle = Path(file_name)
-  fle.touch(exist_ok=True)
+  
+  for i in(file_name, md5_file):
+    fle = Path(i)
+    fle.touch(exist_ok=True)
 
   if Path(file_name).stat().st_size == 0:
     return
-
-  fle = Path(md5_file)
-  fle.touch(exist_ok=True)
 
   f = open(md5_file, 'r')
   md5sum = f.read()
