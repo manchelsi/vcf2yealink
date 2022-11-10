@@ -5,6 +5,15 @@ import requests
 import configparser
 import hashlib
 from pathlib import Path
+import copy
+
+# Read local file `config.ini`.
+config = configparser.ConfigParser()
+config.read('config.ini')
+url = config['SETTINGS']['URL']
+user, password = config['SETTINGS']['USER'], config['SETTINGS']['PASSWORD'] 
+remote_xml = config['SETTINGS']['REMOTE_XML']
+local_xml = config['SETTINGS']['LOCAL_XML']
 
 #check md5sum file
 def check_md5():
@@ -33,12 +42,6 @@ def check_md5():
   f.write(vcf_hash)
   f.close()
 
-# Read local file `config.ini`.
-config = configparser.ConfigParser()
-config.read('config.ini')
-url = config['SETTINGS']['URL']
-user, password = config['SETTINGS']['USER'], config['SETTINGS']['PASSWORD'] 
-yealink_xml = config['SETTINGS']['YEALINK_XML']
 
 resp = requests.get(url, auth=(user, password))
 open("vc.vcf", "wb").write(resp.content)
@@ -78,8 +81,10 @@ vcf.close
 
 card.sort()
 
+card_yealink = copy.deepcopy(card)
 
-f = open(yealink_xml, 'w')
+
+f = open(remote_xml, 'w')
 
 f.write("<YeastarIPPhoneDirectory>\n")
 
@@ -92,5 +97,32 @@ for en in card:
     f.write("   </DirectoryEntry>\n")
 
 f.write("</YeastarIPPhoneDirectory>\n")
+
+f.close()
+
+"""
+Template YEALINK local
+<root_contact>
+<contact display_name="Name Name" office_number="" mobile_number="" other_number="" line="0" ring="" group_id_name="All Contacts" />
+</root_contact>
+"""
+def nums(num1="", num2="", num3="", *del_nums):
+    f.write(f'office_number=\"{num1}\" ')
+    f.write(f'mobile_number=\"{num2}\" ')
+    f.write(f'other_number=\"{num3}\" ')
+
+f = open(local_xml, 'w')
+
+f.write("<root_contact>\n")
+
+for en in card_yealink:
+  if len(en) > 1:
+    f.write("   <contact")
+    f.write(f' display_name=\"{en.pop(0)}\" ')
+
+    nums(*en)
+    f.write("line=\"0\" ring=\"\" group_id_name=\"All Contacts\" />\n")
+
+f.write("</root_contact>\n")
 
 f.close()
